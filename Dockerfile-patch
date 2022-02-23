@@ -1,0 +1,17 @@
+FROM ubuntu:18.04
+
+# Get dependencies
+RUN apt-get update
+RUN apt-get install -y sudo locate nano gcc build-essential python3 systemd
+
+# Setup install
+RUN mkdir /slurm /var/spool/slurmd /var/spool/slurmctl 
+COPY /slurm-21.08.5 /slurm/
+RUN useradd slurm
+WORKDIR /slurm
+
+# Install slurm
+RUN ./configure --sysconfdir=/slurm
+RUN make
+RUN make install
+COPY /slurm.conf /slurm/
