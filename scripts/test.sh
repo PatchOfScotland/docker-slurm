@@ -83,6 +83,44 @@ run_test() {
         rm -r ${jobs_dir}
 }
 
+run_sequential_test() {
+        test_dir="${results_dir}/$1_sequential"
+        make_dir $test_dir
+
+        jobs_count_dir="${test_dir}/${jobs_count}"
+        make_dir $jobs_count_dir
+
+        run_dir="${jobs_count_dir}/$2"
+        make_dir $run_dir
+
+        jobs_dir="${run_dir}/jobs"
+        make_dir $jobs_dir
+
+        start_time=$(timestamp)
+        echo "Start scheduling: ${start_time}" > "${run_dir}/meta.txt"
+
+        jobs=$3
+        $1 -Q --output=/dev/null --error=/dev/null /scripts/sequential.sh 0 $3 $1 "${jobs_dir}/${n}.txt"
+
+        end_sch_time=$(timestamp)
+        echo "End scheduling: ${end_sch_time}" >> "${run_dir}/meta.txt"
+        wait_for_end
+        end_exe_time=$(timestamp)
+        echo "End execution: ${end_exe_time}" >> "${run_dir}/meta.txt"
+
+        echo "${schedule_duration}$((${end_sch_time}-${start_time}))" >> "${run_dir}/meta.txt"
+        echo "${execution_duration}$((${end_exe_time}-${end_sch_time}))" >> "${run_dir}/meta.txt"
+
+        ((job_counter+=$3))
+
+        echo "Completed scheduling run $2 for $1 $3 jobs ${job_counter}/$4 ($(( 200*${job_counter}/$4 - 100*${job_counter}/$4 ))% after $(($(timestamp)-${runtime_start}))s)"
+
+        # Cleanup to prevent too many files accumulating
+        cat ${jobs_dir}/*.txt > "${run_dir}/raw.txt"
+        rm -r ${jobs_dir}
+}
+
+
 collate_results() {
         echo "collating $2 runs of $3 $1 jobs"
         jobs_count_dir="${results_dir}/$1/$3"
@@ -116,7 +154,7 @@ for ((run=0 ; run<$repeats ; run++));
 do
         for ((jobs_count=$start ; jobs_count<=$stop ; jobs_count+=$jump)); 
         do 
-                ((requested_jobs+=$jobs_count*2))
+                ((requested_jobs+=$jobs_count*3))
         done; 
 done;
 
@@ -133,6 +171,9 @@ do
                 
                 # run sbatch tests
                 run_test "sbatch" $run $jobs_count $requested_jobs
+
+                # Only sbatch here as srun will block and never complete        
+                run_sequential_test "sbatch" $run $jobs_count $requested_jobs
         done; 
 done;
 
@@ -143,4 +184,7 @@ do
 
         # run sbatch tests
         collate_results "sbatch" $repeats $jobs_count
+
+        collate_results "sbatch_sequential" $repeats $jobs_count
+
 done; 
