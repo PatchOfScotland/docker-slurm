@@ -48,7 +48,7 @@ RUN cd "$SLURM_DIR" \
     && ldconfig -n /usr/lib
 
 COPY /slurm.conf /etc/slurm/
-#COPY /scripts /scripts
+COPY /scripts /scripts
 #RUN cd /scripts
 
 RUN systemctl enable /usr/local/src/slurm/etc/slurmctld.service \
