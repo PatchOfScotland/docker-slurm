@@ -14,3 +14,5 @@ slurmctld -D -vvvvv
 slurmd -D -vvvvv
 
 service munge start && python3 scripts/fix_hostnames.py && slurmctld && slurmd && cd /scripts
+
+./test.sh 100 2500 100 10
