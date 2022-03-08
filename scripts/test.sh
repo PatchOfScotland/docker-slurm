@@ -1,16 +1,8 @@
-start=$1
-stop=$2
-jump=$3
-repeats=$4
+repeats=$1
+jobs_counts=(10 20 30 40 50 60 70 80 90 100 125 150 175 200 250 300 400 500)
 
 schedule_duration="Scheduling duration: "
 execution_duration="Execution duration: "
-
-# Confirm input parameters
-echo "Start: $start";
-echo "Stop: $stop";
-echo "Jump: $jump";
-echo "Repeats: $repeats"
 
 # Timestamp function
 timestamp() {
@@ -76,7 +68,7 @@ run_test() {
 
         ((job_counter+=$3))
 
-        echo "Completed scheduling run $2 for $1 $3 jobs ${job_counter}/$4 ($(( 200*${job_counter}/$4 - 100*${job_counter}/$4 ))% after $(($(timestamp)-${runtime_start}))s)"
+        echo "Completed scheduling run $2 for ${1} $3 jobs ${job_counter}/$4 ($(( 200*${job_counter}/$4 - 100*${job_counter}/$4 ))% after $(($(timestamp)-${runtime_start}))s)"
 
         # Cleanup to prevent too many files accumulating
         cat ${jobs_dir}/*.txt > "${run_dir}/raw.txt"
@@ -113,7 +105,7 @@ run_sequential_test() {
 
         ((job_counter+=$3))
 
-        echo "Completed scheduling run $2 for $1 $3 jobs ${job_counter}/$4 ($(( 200*${job_counter}/$4 - 100*${job_counter}/$4 ))% after $(($(timestamp)-${runtime_start}))s)"
+        echo "Completed scheduling run $2 for $1_sequential $3 jobs ${job_counter}/$4 ($(( 200*${job_counter}/$4 - 100*${job_counter}/$4 ))% after $(($(timestamp)-${runtime_start}))s)"
 
         # Cleanup to prevent too many files accumulating
         cat ${jobs_dir}/*.txt > "${run_dir}/raw.txt"
@@ -149,13 +141,14 @@ collate_results() {
 results_dir="results"
 make_dir $results_dir
 
+
 requested_jobs=0
 for ((run=0 ; run<$repeats ; run++)); 
 do
-        for ((jobs_count=$start ; jobs_count<=$stop ; jobs_count+=$jump)); 
-        do 
+        for jobs_count in ${jobs_counts[@]};
+        do
                 ((requested_jobs+=$jobs_count*3))
-        done; 
+        done
 done;
 
 echo "requested jobs: ${requested_jobs}" 
@@ -164,7 +157,7 @@ runtime_start=$(timestamp)
 job_counter=0
 for ((run=0 ; run<$repeats ; run++)); 
 do
-        for ((jobs_count=$start ; jobs_count<=$stop ; jobs_count+=$jump)); 
+        for jobs_count in ${jobs_counts[@]};
         do 
                 # Run srun tests
                 run_test "srun" $run $jobs_count $requested_jobs

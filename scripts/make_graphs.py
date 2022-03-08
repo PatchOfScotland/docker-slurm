@@ -5,7 +5,8 @@ import numpy
 
 import matplotlib.pyplot as pyplot
 
-RESULTS_FOLDER = "results"
+RESULTS_FOLDER = "/home/patch_of_scotland/Documents/Docker/docker-slurm/scripts/results"
+GRAPH_PATH = "/home/patch_of_scotland/Documents/Docker/docker-slurm/slurm_overheads_highlighted_laptop.pdf"
 SCHEDULE_TEXT = 'Avergae schedule time: '
 EXECUTION_TEXT = 'Average execution time: '
 
@@ -78,5 +79,5 @@ if __name__ == '__main__':
 #    pyplot.legend([handles[i] for i in legend_order], [labels[i] for i in legend_order], loc=(0.04, 0.65))
     pyplot.legend()
 
-    pyplot.savefig("slurm_overheads_highlighted.pdf", format='pdf', dpi=250, width=100, height=10)
+    pyplot.savefig(GRAPH_PATH, format='pdf', dpi=250, width=100, height=10)
 #    pyplot.show()
