@@ -74,6 +74,17 @@ if __name__ == '__main__':
     pyplot.ylabel("Time taken (seconds)")
     pyplot.title("Slurm sheduling overheads")
 
+    x_ticks = []
+    for tick in scheduling_x:
+        label = tick
+        if tick <= 100 and tick % 20 == 0:
+            label = f"\n{tick}"
+        x_ticks.append(label)
+
+    print(x_ticks)
+
+    pyplot.xticks(scheduling_x, x_ticks)
+
     handles, labels = pyplot.gca().get_legend_handles_labels()
 #    legend_order = [2, 0, 5, 3, 4, 1]
 #    pyplot.legend([handles[i] for i in legend_order], [labels[i] for i in legend_order], loc=(0.04, 0.65))

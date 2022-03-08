@@ -148,7 +148,7 @@ do
         for jobs_count in ${jobs_counts[@]};
         do
                 ((requested_jobs+=$jobs_count*3))
-        done
+        done;
 done;
 
 echo "requested jobs: ${requested_jobs}" 
@@ -170,7 +170,7 @@ do
         done; 
 done;
 
-for ((jobs_count=$start ; jobs_count<=$stop ; jobs_count+=$jump)); 
+for jobs_count in ${jobs_counts[@]};
 do 
         # Run srun tests
         collate_results "srun" $repeats $jobs_count 
