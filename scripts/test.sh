@@ -92,7 +92,7 @@ run_sequential_test() {
         echo "Start scheduling: ${start_time}" > "${run_dir}/meta.txt"
 
         jobs=$3
-        $1 -Q --output=/dev/null --error=/dev/null /scripts/sequential.sh 0 $3 $1 "${jobs_dir}/${n}.txt"
+        $1 -Q --output=/dev/null --error=/dev/null /scripts/sequential.sh 0 $(($3-1)) $1 "${jobs_dir}/X.txt"
 
         end_sch_time=$(timestamp)
         echo "End scheduling: ${end_sch_time}" >> "${run_dir}/meta.txt"
@@ -141,7 +141,6 @@ collate_results() {
 results_dir="results"
 make_dir $results_dir
 
-
 requested_jobs=0
 for ((run=0 ; run<$repeats ; run++)); 
 do
@@ -160,10 +159,10 @@ do
         for jobs_count in ${jobs_counts[@]};
         do 
                 # Run srun tests
-                run_test "srun" $run $jobs_count $requested_jobs
+                #run_test "srun" $run $jobs_count $requested_jobs
                 
                 # run sbatch tests
-                run_test "sbatch" $run $jobs_count $requested_jobs
+                #run_test "sbatch" $run $jobs_count $requested_jobs
 
                 # Only sbatch here as srun will block and never complete        
                 run_sequential_test "sbatch" $run $jobs_count $requested_jobs
@@ -173,10 +172,10 @@ done;
 for jobs_count in ${jobs_counts[@]};
 do 
         # Run srun tests
-        collate_results "srun" $repeats $jobs_count 
+        #collate_results "srun" $repeats $jobs_count 
 
         # run sbatch tests
-        collate_results "sbatch" $repeats $jobs_count
+        #collate_results "sbatch" $repeats $jobs_count
 
         collate_results "sbatch_sequential" $repeats $jobs_count
 
