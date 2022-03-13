@@ -15,15 +15,15 @@ mean() {
         for i in "${list[@]}";
         do
                 ((sum+=$i))
-        done; 
+        done;
         echo $(($sum/${#list[@]}))
 }
 
 make_dir() {
-        if [ ! -d $1 ] 
+        if [ ! -d $1 ]
         then
                 mkdir $1
-        fi        
+        fi
 }
 
 wait_for_end() {
@@ -105,6 +105,8 @@ run_sequential_test() {
 
         ((job_counter+=$3))
 
+        sleep $(($3/10))
+
         echo "Completed scheduling run $2 for $1_sequential $3 jobs ${job_counter}/$4 ($(( 200*${job_counter}/$4 - 100*${job_counter}/$4 ))% after $(($(timestamp)-${runtime_start}))s)"
 
         # Cleanup to prevent too many files accumulating
@@ -142,7 +144,7 @@ results_dir="results"
 make_dir $results_dir
 
 requested_jobs=0
-for ((run=0 ; run<$repeats ; run++)); 
+for ((run=0 ; run<$repeats ; run++));
 do
         for jobs_count in ${jobs_counts[@]};
         do
@@ -154,29 +156,29 @@ echo "requested jobs: ${requested_jobs}"
 
 runtime_start=$(timestamp)
 job_counter=0
-for ((run=0 ; run<$repeats ; run++)); 
+for ((run=0 ; run<$repeats ; run++));
 do
         for jobs_count in ${jobs_counts[@]};
-        do 
+        do
                 # Run srun tests
-                #run_test "srun" $run $jobs_count $requested_jobs
-                
-                # run sbatch tests
-                #run_test "sbatch" $run $jobs_count $requested_jobs
+                run_test "srun" $run $jobs_count $requested_jobs
 
-                # Only sbatch here as srun will block and never complete        
+                # run sbatch tests
+                run_test "sbatch" $run $jobs_count $requested_jobs
+
+                # Only sbatch here as srun will block and never complete
                 run_sequential_test "sbatch" $run $jobs_count $requested_jobs
-        done; 
+        done;
 done;
 
 for jobs_count in ${jobs_counts[@]};
-do 
+do
         # Run srun tests
-        #collate_results "srun" $repeats $jobs_count 
+        collate_results "srun" $repeats $jobs_count
 
         # run sbatch tests
-        #collate_results "sbatch" $repeats $jobs_count
+        collate_results "sbatch" $repeats $jobs_count
 
         collate_results "sbatch_sequential" $repeats $jobs_count
 
-done; 
+done;
