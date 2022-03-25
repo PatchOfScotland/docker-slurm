@@ -1,7 +1,7 @@
 #!/bin/bash
 
 timestamp() {
-        date +"%s"
+        date +"%s%N"
 }
 
 echo "$1: $(timestamp)" >> "$4"

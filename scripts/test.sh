@@ -6,7 +6,8 @@ execution_duration="Execution duration: "
 
 # Timestamp function
 timestamp() {
-        date +"%s"
+        date +"%s%N"
+#        ((`date '+%s%N'`/1000)) && echo ${m:0:${#m}-6}.${m:${#m}-6}
 }
 
 mean() {
@@ -68,7 +69,7 @@ run_test() {
 
         ((job_counter+=$3))
 
-        echo "Completed scheduling run $2 for ${1} $3 jobs ${job_counter}/$4 ($(( 200*${job_counter}/$4 - 100*${job_counter}/$4 ))% after $(($(timestamp)-${runtime_start}))s)"
+        echo "Completed scheduling run $2 for ${1} $3 jobs ${job_counter}/$4 ($(( 200*${job_counter}/$4 - 100*${job_counter}/$4 ))% after $((($(timestamp)-${runtime_start})/1000000000))s)"
 
         # Cleanup to prevent too many files accumulating
         cat ${jobs_dir}/*.txt > "${run_dir}/raw.txt"
@@ -107,7 +108,7 @@ run_sequential_test() {
 
         sleep $(($3/10))
 
-        echo "Completed scheduling run $2 for $1_sequential $3 jobs ${job_counter}/$4 ($(( 200*${job_counter}/$4 - 100*${job_counter}/$4 ))% after $(($(timestamp)-${runtime_start}))s)"
+        echo "Completed scheduling run $2 for $1_sequential $3 jobs ${job_counter}/$4 ($(( 200*${job_counter}/$4 - 100*${job_counter}/$4 ))% after $((($(timestamp)-${runtime_start})/1000000000))s)"
 
         # Cleanup to prevent too many files accumulating
         cat ${jobs_dir}/*.txt > "${run_dir}/raw.txt"

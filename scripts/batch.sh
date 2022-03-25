@@ -1,5 +1,5 @@
 timestamp() {
-        date +"%s"
+        date +"%s%N"
 }
 
 echo "$(timestamp)" > "/scripts/results/batch.txt"

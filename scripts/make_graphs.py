@@ -28,9 +28,9 @@ if __name__ == '__main__':
             execution_duration = 0            
             for line in data:
                 if SCHEDULE_TEXT in line:
-                    scheduling_duration = int(line.replace(SCHEDULE_TEXT, ''))
+                    scheduling_duration = float(line.replace(SCHEDULE_TEXT, ''))/1000000000
                 elif EXECUTION_TEXT in line:
-                    execution_duration = int(line.replace(EXECUTION_TEXT, ''))
+                    execution_duration = float(line.replace(EXECUTION_TEXT, ''))/1000000000
                     
             scheduling_results[run_type].append((job_count, scheduling_duration))
             execution_results[run_type].append((job_count, execution_duration))
@@ -43,10 +43,10 @@ if __name__ == '__main__':
     pyplot.figure(1, figsize=(12, 6), dpi=250)
     for run_type in os.listdir(RESULTS_FOLDER):
         scheduling_x = numpy.asarray([int(i[0]) for i in scheduling_results[run_type]])
-        scheduling_y = numpy.asarray([int(i[1]) for i in scheduling_results[run_type]])
+        scheduling_y = numpy.asarray([float(i[1]) for i in scheduling_results[run_type]])
 
         execution_x = numpy.asarray([int(i[0]) for i in execution_results[run_type]])
-        execution_y = numpy.asarray([int(i[1]) for i in execution_results[run_type]])
+        execution_y = numpy.asarray([float(i[1]) for i in execution_results[run_type]])
 
         combined_x = scheduling_x
         combined_y = scheduling_y + execution_y
@@ -80,8 +80,6 @@ if __name__ == '__main__':
         if tick <= 100 and tick % 20 == 0:
             label = f"\n{tick}"
         x_ticks.append(label)
-
-    print(x_ticks)
 
     pyplot.xticks(scheduling_x, x_ticks)
 
